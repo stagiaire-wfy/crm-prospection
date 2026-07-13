@@ -21,31 +21,23 @@ const SECTEUR_GROUPS: { label: string; secteurs: string[] }[] = [
   {
     label: 'Bâtiment',
     secteurs: [
-      // Extérieur
-      'Pisciniste', 'Paysagiste', 'Terrassier', 'Façadier', 'Couvreur', 'Couvreur zingueur',
-      'Étancheur', 'Charpentier', 'Élagueur', 'Installateur portail & clôture', 'Vérandaliste',
-      // Menuiserie & Fermeture
-      'Menuisier extérieur', 'Poseur de fenêtres',
-      // Énergie & Confort
-      'Climaticien', 'Installateur pompe à chaleur', 'Isolation maison/combles',
-      // Rénovation & Gros œuvre
-      'Entreprise de rénovation générale', 'Rénovation salle de bain', 'Maçon', 'Carreleur',
-      'Solier / Poseur de sol', 'Cuisiniste indépendant', 'Plaquiste',
-      // Corps d'état secondaires
-      'Peintre en bâtiment', 'Électricien', 'Plombier', 'Chauffagiste', 'Serrurier', 'Domoticien',
-      // Construction
-      'Constructeur maison individuelle',
+      'Carreleur', 'Charpentier', 'Chauffagiste', 'Climaticien', 'Constructeur maison individuelle',
+      'Couvreur', 'Couvreur zingueur', 'Cuisiniste indépendant', 'Domoticien', 'Élagueur',
+      'Électricien', 'Entreprise de rénovation générale', 'Étancheur', 'Façadier',
+      'Installateur pompe à chaleur', 'Installateur portail & clôture', 'Isolation maison/combles',
+      'Maçon', 'Menuisier extérieur', 'Paysagiste', 'Peintre en bâtiment', 'Pisciniste',
+      'Plaquiste', 'Plombier', 'Poseur de fenêtres', 'Rénovation salle de bain', 'Serrurier',
+      'Solier / Poseur de sol', 'Terrassier', 'Vérandaliste',
     ],
   },
   {
     label: 'Autres secteurs',
     secteurs: [
-      'Agriculture', 'Alimentation & Restauration', 'Automobile', 'Banque & Finance',
-      'Commerce & Distribution', 'Conseil & Services', 'Courtier en énergie',
-      'Éducation & Formation', 'Énergie',
-      'High-Tech & Informatique', 'Hôtellerie & Tourisme', 'Immobilier', 'Industrie & Manufacturing',
-      'Logistique & Transport', 'Médias & Communication', 'Droit & Juridique', 'Santé & Pharmacie',
-      'Télécommunications', 'Textile & Mode', 'Autre',
+      'Agriculture', 'Alimentation & Restauration', 'Automobile', 'Autre', 'Banque & Finance',
+      'Commerce & Distribution', 'Conseil & Services', 'Courtier en énergie', 'Droit & Juridique',
+      'Éducation & Formation', 'Énergie', 'High-Tech & Informatique', 'Hôtellerie & Tourisme',
+      'Immobilier', 'Industrie & Manufacturing', 'Logistique & Transport', 'Médias & Communication',
+      'Santé & Pharmacie', 'Télécommunications', 'Textile & Mode',
     ],
   },
 ];

@@ -1,10 +1,11 @@
 import { useEffect, useState, useRef } from 'react';
-import { ArrowLeft, Phone, Mail, Building2, MapPin, Globe, Hash, Tag, Instagram, Facebook, Linkedin, Twitter, Smartphone, Monitor, Clock, Plus, Trash2, CheckSquare, FileText, Upload, Download, ExternalLink, RefreshCw, X, ChevronDown, CreditCard as Edit3, Check, MessageCircle, Calendar, AlertTriangle, Eye } from 'lucide-react';
+import { ArrowLeft, Phone, Mail, Building2, MapPin, Globe, Hash, Tag, Instagram, Facebook, Linkedin, Twitter, Smartphone, Monitor, Clock, Plus, Trash2, CheckSquare, FileText, Upload, Download, ExternalLink, RefreshCw, X, ChevronDown, CreditCard as Edit3, Check, MessageCircle, Calendar, AlertTriangle, Eye, Sparkles } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import type { Contact, Interaction, Tache, ContactDocument } from '../types/database';
 import QuickInteractionModal from '../components/QuickInteractionModal';
 import ContactAddressMap from '../components/ContactAddressMap';
 import SirenEnrichButton from '../components/SirenEnrichButton';
+import AiEnrichModal from '../components/AiEnrichModal';
 import type { SirenResult } from '../lib/siren';
 
 const STATUT_COLORS: Record<string, string> = {
@@ -75,6 +76,7 @@ export default function ContactDetail({ contactId, onBack, onEdit }: Props) {
   const dropRef = useRef<HTMLDivElement>(null);
   const [draggingPdf, setDraggingPdf] = useState(false);
   const [showQuickModal, setShowQuickModal] = useState(false);
+  const [showAiEnrich, setShowAiEnrich] = useState(false);
   const [editingInteraction, setEditingInteraction] = useState<Interaction | null>(null);
   const [editingTache, setEditingTache] = useState<Tache | null>(null);
   const [iForm, setIForm] = useState({ type: 'Appel' as Interaction['type'], date_heure: '', duree: 0, resultat: '' as Interaction['resultat'], notes: '' });
@@ -265,6 +267,13 @@ export default function ContactDetail({ contactId, onBack, onEdit }: Props) {
               >
                 <Phone className="w-3.5 h-3.5" />
                 Noter interaction
+              </button>
+              <button
+                onClick={() => setShowAiEnrich(true)}
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 text-white rounded-xl text-xs font-semibold hover:bg-slate-900 transition-colors"
+              >
+                <Sparkles className="w-3.5 h-3.5" />
+                Enrichir via IA
               </button>
               <button
                 onClick={() => onEdit(contact)}
@@ -817,6 +826,14 @@ export default function ContactDetail({ contactId, onBack, onEdit }: Props) {
             </div>
           )}
         </div>
+      )}
+
+      {showAiEnrich && (
+        <AiEnrichModal
+          contact={contact}
+          onClose={() => setShowAiEnrich(false)}
+          onApplied={() => { setShowAiEnrich(false); loadAll(); }}
+        />
       )}
     </div>
   );
