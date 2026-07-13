@@ -3,6 +3,9 @@ import { ArrowLeft, Phone, Mail, Building2, MapPin, Globe, Hash, Tag, Instagram,
 import { supabase } from '../lib/supabase';
 import type { Contact, Interaction, Tache, ContactDocument } from '../types/database';
 import QuickInteractionModal from '../components/QuickInteractionModal';
+import ContactAddressMap from '../components/ContactAddressMap';
+import SirenEnrichButton from '../components/SirenEnrichButton';
+import type { SirenResult } from '../lib/siren';
 
 const STATUT_COLORS: Record<string, string> = {
   'Nouveau': 'bg-slate-100 text-slate-700 border-slate-300',
@@ -194,6 +197,18 @@ export default function ContactDetail({ contactId, onBack, onEdit }: Props) {
     loadAll();
   };
 
+  const applySirenResult = async (r: SirenResult) => {
+    await supabase.from('contacts').update({
+      entreprise: r.entreprise || contact?.entreprise,
+      siren_siret: r.siret || contact?.siren_siret,
+      adresse: r.adresse || contact?.adresse,
+      code_postal: r.code_postal || contact?.code_postal,
+      ville: r.ville || contact?.ville,
+      secteur_activite: r.secteur_suggestion || contact?.secteur_activite,
+    }).eq('id', contactId);
+    loadAll();
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -377,13 +392,22 @@ export default function ContactDetail({ contactId, onBack, onEdit }: Props) {
                 </div>
               )}
             </div>
+
+            <ContactAddressMap contact={contact} onContactUpdated={loadAll} />
           </div>
 
           {/* Entreprise */}
           <div className="bg-white rounded-2xl border border-slate-200 p-6">
-            <h3 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
-              <Building2 className="w-4 h-4 text-blue-600" /> Entreprise
-            </h3>
+            <div className="flex items-center justify-between gap-2 mb-4 flex-wrap">
+              <h3 className="font-bold text-slate-900 flex items-center gap-2">
+                <Building2 className="w-4 h-4 text-blue-600" /> Entreprise
+              </h3>
+              <SirenEnrichButton
+                sirenSiret={contact.siren_siret || ''}
+                entreprise={contact.entreprise || ''}
+                onApply={applySirenResult}
+              />
+            </div>
             <div className="space-y-3">
               {contact.entreprise && (
                 <div>

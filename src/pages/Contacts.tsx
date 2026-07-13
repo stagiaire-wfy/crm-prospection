@@ -11,6 +11,8 @@ import type { Contact } from '../types/database';
 import ContactMap from '../components/ContactMap';
 import CsvImport from '../components/CsvImport';
 import ContactSidePanel from '../components/ContactSidePanel';
+import SirenEnrichButton from '../components/SirenEnrichButton';
+import type { SirenResult } from '../lib/siren';
 
 const STATUTS = ['Nouveau', 'En cours', 'Converti', 'Perdu'] as const;
 const TAGS_DISPONIBLES = ['Client', 'Prospect', 'Partenaire', 'VIP', 'Prioritaire', 'À relancer'];
@@ -802,7 +804,22 @@ export default function Contacts({ onOpenContact, editTarget, onEditTargetHandle
               </div>
               {/* Entreprise details */}
               <div className="border border-slate-200 rounded-xl p-4 space-y-3 bg-slate-50/50">
-                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Informations entreprise</p>
+                <div className="flex items-center justify-between gap-2 flex-wrap">
+                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Informations entreprise</p>
+                  <SirenEnrichButton
+                    sirenSiret={formData.siren_siret}
+                    entreprise={formData.entreprise}
+                    onApply={(r: SirenResult) => setFormData(prev => ({
+                      ...prev,
+                      entreprise: r.entreprise || prev.entreprise,
+                      siren_siret: r.siret || prev.siren_siret,
+                      adresse: r.adresse || prev.adresse,
+                      code_postal: r.code_postal || prev.code_postal,
+                      ville: r.ville || prev.ville,
+                      secteur_activite: r.secteur_suggestion || prev.secteur_activite,
+                    }))}
+                  />
+                </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="block text-xs font-semibold text-slate-600 mb-1.5 uppercase tracking-wide">SIREN / SIRET</label>
