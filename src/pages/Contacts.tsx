@@ -17,28 +17,44 @@ import type { SirenResult } from '../lib/siren';
 const STATUTS = ['Nouveau', 'En cours', 'Converti', 'Perdu'] as const;
 const TAGS_DISPONIBLES = ['Client', 'Prospect', 'Partenaire', 'VIP', 'Prioritaire', 'À relancer'];
 const PAYS = ['France', 'Israël'] as const;
-const SECTEURS = [
-  // Artisans du bâtiment - Extérieur
-  'Pisciniste', 'Paysagiste', 'Terrassier', 'Façadier', 'Couvreur', 'Couvreur zingueur',
-  'Étancheur', 'Charpentier', 'Élagueur', 'Installateur portail & clôture', 'Vérandaliste',
-  // Menuiserie & Fermeture
-  'Menuisier extérieur', 'Poseur de fenêtres',
-  // Énergie & Confort
-  'Climaticien', 'Installateur pompe à chaleur', 'Isolation maison/combles',
-  // Rénovation & Gros œuvre
-  'Entreprise de rénovation générale', 'Rénovation salle de bain', 'Maçon', 'Carreleur',
-  'Solier / Poseur de sol', 'Cuisiniste indépendant', 'Plaquiste',
-  // Corps d'état secondaires
-  'Peintre en bâtiment', 'Électricien', 'Plombier', 'Chauffagiste', 'Serrurier', 'Domoticien',
-  // Construction
-  'Constructeur maison individuelle',
-  // Autres secteurs
-  'Agriculture', 'Alimentation & Restauration', 'Automobile', 'Banque & Finance',
-  'Commerce & Distribution', 'Conseil & Services', 'Éducation & Formation', 'Énergie',
-  'High-Tech & Informatique', 'Hôtellerie & Tourisme', 'Immobilier', 'Industrie & Manufacturing',
-  'Logistique & Transport', 'Médias & Communication', 'Droit & Juridique', 'Santé & Pharmacie',
-  'Télécommunications', 'Textile & Mode', 'Autre',
+const SECTEUR_GROUPS: { label: string; secteurs: string[] }[] = [
+  {
+    label: 'Bâtiment',
+    secteurs: [
+      // Extérieur
+      'Pisciniste', 'Paysagiste', 'Terrassier', 'Façadier', 'Couvreur', 'Couvreur zingueur',
+      'Étancheur', 'Charpentier', 'Élagueur', 'Installateur portail & clôture', 'Vérandaliste',
+      // Menuiserie & Fermeture
+      'Menuisier extérieur', 'Poseur de fenêtres',
+      // Énergie & Confort
+      'Climaticien', 'Installateur pompe à chaleur', 'Isolation maison/combles',
+      // Rénovation & Gros œuvre
+      'Entreprise de rénovation générale', 'Rénovation salle de bain', 'Maçon', 'Carreleur',
+      'Solier / Poseur de sol', 'Cuisiniste indépendant', 'Plaquiste',
+      // Corps d'état secondaires
+      'Peintre en bâtiment', 'Électricien', 'Plombier', 'Chauffagiste', 'Serrurier', 'Domoticien',
+      // Construction
+      'Constructeur maison individuelle',
+    ],
+  },
+  {
+    label: 'Autres secteurs',
+    secteurs: [
+      'Agriculture', 'Alimentation & Restauration', 'Automobile', 'Banque & Finance',
+      'Commerce & Distribution', 'Conseil & Services', 'Courtier en énergie',
+      'Éducation & Formation', 'Énergie',
+      'High-Tech & Informatique', 'Hôtellerie & Tourisme', 'Immobilier', 'Industrie & Manufacturing',
+      'Logistique & Transport', 'Médias & Communication', 'Droit & Juridique', 'Santé & Pharmacie',
+      'Télécommunications', 'Textile & Mode', 'Autre',
+    ],
+  },
 ];
+
+const SECTEURS = SECTEUR_GROUPS.flatMap(g => g.secteurs);
+
+function findSecteurGroupe(secteur: string): string {
+  return SECTEUR_GROUPS.find(g => g.secteurs.includes(secteur))?.label || SECTEUR_GROUPS[0].label;
+}
 
 const PAGE_SIZE = 15;
 
@@ -121,6 +137,7 @@ export default function Contacts({ onOpenContact, editTarget, onEditTargetHandle
   const [showColPanel, setShowColPanel] = useState(false);
   const colPanelRef = useRef<HTMLDivElement>(null);
   const [formData, setFormData] = useState({ ...emptyForm });
+  const [secteurGroupe, setSecteurGroupe] = useState(SECTEUR_GROUPS[0].label);
 
   useEffect(() => { loadContacts(); }, []);
 
@@ -213,7 +230,7 @@ export default function Contacts({ onOpenContact, editTarget, onEditTargetHandle
     });
   };
 
-  const resetForm = () => { setFormData({ ...emptyForm }); setEditingContact(null); };
+  const resetForm = () => { setFormData({ ...emptyForm }); setEditingContact(null); setSecteurGroupe(SECTEUR_GROUPS[0].label); };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -244,6 +261,7 @@ export default function Contacts({ onOpenContact, editTarget, onEditTargetHandle
       pagespeed_mobile: c.pagespeed_mobile ?? null,
       pagespeed_desktop: c.pagespeed_desktop ?? null,
     });
+    setSecteurGroupe(findSecteurGroupe(c.secteur_activite));
     setShowModal(true);
   };
 
@@ -371,7 +389,11 @@ export default function Contacts({ onOpenContact, editTarget, onEditTargetHandle
           </select>
           <select value={filterSecteur} onChange={e => setFilterSecteur(e.target.value)} className="px-3 py-2 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white">
             <option value="">Tous les secteurs</option>
-            {SECTEURS.map(s => <option key={s} value={s}>{s}</option>)}
+            {SECTEUR_GROUPS.map(g => (
+              <optgroup key={g.label} label={g.label}>
+                {g.secteurs.map(s => <option key={s} value={s}>{s}</option>)}
+              </optgroup>
+            ))}
           </select>
           <select value={filterTag} onChange={e => setFilterTag(e.target.value)} className="px-3 py-2 text-sm border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white">
             <option value="">Tous les tags</option>
@@ -750,10 +772,28 @@ export default function Contacts({ onOpenContact, editTarget, onEditTargetHandle
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-slate-600 mb-1.5 uppercase tracking-wide">Secteur</label>
-                  <select value={formData.secteur_activite} onChange={e => setFormData({ ...formData, secteur_activite: e.target.value })} className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white">
-                    <option value="">— Choisir —</option>
-                    {SECTEURS.map(s => <option key={s} value={s}>{s}</option>)}
-                  </select>
+                  <div className="space-y-1.5">
+                    <select
+                      value={secteurGroupe}
+                      onChange={e => {
+                        const groupe = e.target.value;
+                        setSecteurGroupe(groupe);
+                        const secteurs = SECTEUR_GROUPS.find(g => g.label === groupe)?.secteurs || [];
+                        setFormData(prev => ({ ...prev, secteur_activite: secteurs.includes(prev.secteur_activite) ? prev.secteur_activite : '' }));
+                      }}
+                      className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white"
+                    >
+                      {SECTEUR_GROUPS.map(g => <option key={g.label} value={g.label}>{g.label}</option>)}
+                    </select>
+                    <select
+                      value={formData.secteur_activite}
+                      onChange={e => setFormData({ ...formData, secteur_activite: e.target.value })}
+                      className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white"
+                    >
+                      <option value="">— Choisir —</option>
+                      {(SECTEUR_GROUPS.find(g => g.label === secteurGroupe)?.secteurs || []).map(s => <option key={s} value={s}>{s}</option>)}
+                    </select>
+                  </div>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -809,15 +849,18 @@ export default function Contacts({ onOpenContact, editTarget, onEditTargetHandle
                   <SirenEnrichButton
                     sirenSiret={formData.siren_siret}
                     entreprise={formData.entreprise}
-                    onApply={(r: SirenResult) => setFormData(prev => ({
-                      ...prev,
-                      entreprise: r.entreprise || prev.entreprise,
-                      siren_siret: r.siret || prev.siren_siret,
-                      adresse: r.adresse || prev.adresse,
-                      code_postal: r.code_postal || prev.code_postal,
-                      ville: r.ville || prev.ville,
-                      secteur_activite: r.secteur_suggestion || prev.secteur_activite,
-                    }))}
+                    onApply={(r: SirenResult) => {
+                      if (r.secteur_suggestion) setSecteurGroupe(findSecteurGroupe(r.secteur_suggestion));
+                      setFormData(prev => ({
+                        ...prev,
+                        entreprise: r.entreprise || prev.entreprise,
+                        siren_siret: r.siret || prev.siren_siret,
+                        adresse: r.adresse || prev.adresse,
+                        code_postal: r.code_postal || prev.code_postal,
+                        ville: r.ville || prev.ville,
+                        secteur_activite: r.secteur_suggestion || prev.secteur_activite,
+                      }));
+                    }}
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
