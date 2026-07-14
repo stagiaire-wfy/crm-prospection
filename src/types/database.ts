@@ -1,3 +1,18 @@
+export type PageSpeedCategoryScores = {
+  performance: number | null;
+  accessibility: number | null;
+  best_practices: number | null;
+  seo: number | null;
+  agentic_passed: number | null;
+  agentic_total: number | null;
+};
+
+export type PageSpeedDetails = {
+  mobile?: PageSpeedCategoryScores;
+  desktop?: PageSpeedCategoryScores;
+  checked_at?: string;
+};
+
 export type Contact = {
   id: string;
   prenom: string;
@@ -24,6 +39,7 @@ export type Contact = {
   pagespeed_mobile: number | null;
   pagespeed_desktop: number | null;
   pagespeed_checked_at: string | null;
+  pagespeed_details: PageSpeedDetails | null;
   derniere_interaction: string | null;
   created_at: string;
   updated_at: string;

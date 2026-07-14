@@ -6,6 +6,7 @@ import QuickInteractionModal from '../components/QuickInteractionModal';
 import ContactAddressMap from '../components/ContactAddressMap';
 import SirenEnrichButton from '../components/SirenEnrichButton';
 import AiEnrichModal from '../components/AiEnrichModal';
+import PageSpeedPanel from '../components/PageSpeedPanel';
 import type { SirenResult } from '../lib/siren';
 
 const STATUT_COLORS: Record<string, string> = {
@@ -438,36 +439,7 @@ export default function ContactDetail({ contactId, onBack, onEdit }: Props) {
                   </p>
                 </div>
               )}
-              {contact.site_web && (
-                <div>
-                  <p className="text-xs text-slate-500 mb-1.5">PageSpeed Insights</p>
-                  <div className="flex items-center gap-3">
-                    {contact.pagespeed_mobile !== null && (
-                      <div className="flex items-center gap-1.5">
-                        <Smartphone className="w-3.5 h-3.5 text-slate-400" />
-                        <span className="text-xs text-slate-500">Mobile</span>
-                        <PageSpeedBadge score={contact.pagespeed_mobile} />
-                      </div>
-                    )}
-                    {contact.pagespeed_desktop !== null && (
-                      <div className="flex items-center gap-1.5">
-                        <Monitor className="w-3.5 h-3.5 text-slate-400" />
-                        <span className="text-xs text-slate-500">Desktop</span>
-                        <PageSpeedBadge score={contact.pagespeed_desktop} />
-                      </div>
-                    )}
-                    {contact.pagespeed_mobile === null && contact.pagespeed_desktop === null && (
-                      <a
-                        href={`https://pagespeed.web.dev/analysis?url=${encodeURIComponent(contact.site_web.startsWith('http') ? contact.site_web : 'https://' + contact.site_web)}`}
-                        target="_blank" rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 text-xs text-blue-600 hover:text-blue-800"
-                      >
-                        <RefreshCw className="w-3 h-3" /> Tester sur PageSpeed
-                      </a>
-                    )}
-                  </div>
-                </div>
-              )}
+              {contact.site_web && <PageSpeedPanel contact={contact} onUpdated={loadAll} />}
             </div>
 
             {contact.notes_entreprise && (

@@ -18,6 +18,8 @@ interface EnrichPayload {
   email?: string;
   telephone?: string;
   linkedin?: string;
+  instagram?: string;
+  facebook?: string;
   siren_siret?: string;
 }
 
