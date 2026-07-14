@@ -20,6 +20,12 @@ export function isMobilePhone(value: string): boolean {
   return /^(0[67]|33[67]|9725)/.test((value || '').replace(/\D/g, ''));
 }
 
+// L'IA renvoie parfois la chaîne "null" ou "inconnu" au lieu d'un champ vide
+function clean(value: unknown): string {
+  const s = String(value ?? '').trim();
+  return /^(null|undefined|n\/a|inconnu|aucune?)$/i.test(s) ? '' : s;
+}
+
 export async function enrichContactWithAi(contact: Contact): Promise<AiEnrichResult> {
   const { data, error } = await supabase.functions.invoke('enrich-ai', {
     body: {
@@ -43,16 +49,16 @@ export async function enrichContactWithAi(contact: Contact): Promise<AiEnrichRes
   if (data?.error) throw new Error(data.error);
   const r = data.result || {};
   return {
-    email: r.email || '',
-    telephone: r.telephone || '',
-    telephone_type: r.telephone_type || '',
-    linkedin_url: r.linkedin_url || '',
-    instagram_url: r.instagram_url || '',
-    facebook_url: r.facebook_url || '',
-    siren_siret: r.siren_siret || '',
+    email: clean(r.email),
+    telephone: clean(r.telephone),
+    telephone_type: clean(r.telephone_type),
+    linkedin_url: clean(r.linkedin_url),
+    instagram_url: clean(r.instagram_url),
+    facebook_url: clean(r.facebook_url),
+    siren_siret: clean(r.siren_siret),
     confidence: Number(r.confidence) || 0,
-    sources: Array.isArray(r.sources) ? r.sources : [],
-    notes: r.notes || '',
+    sources: Array.isArray(r.sources) ? r.sources.map(clean).filter(Boolean) : [],
+    notes: clean(r.notes),
   };
 }
 
@@ -66,16 +72,16 @@ export async function getLatestEnrichment(contactId: string): Promise<CachedEnri
     .maybeSingle();
   if (!data) return null;
   return {
-    email: data.email || '',
-    telephone: data.telephone || '',
-    telephone_type: data.telephone_type || '',
-    linkedin_url: data.linkedin_url || '',
-    instagram_url: data.instagram_url || '',
-    facebook_url: data.facebook_url || '',
-    siren_siret: data.siren_siret || '',
+    email: clean(data.email),
+    telephone: clean(data.telephone),
+    telephone_type: clean(data.telephone_type),
+    linkedin_url: clean(data.linkedin_url),
+    instagram_url: clean(data.instagram_url),
+    facebook_url: clean(data.facebook_url),
+    siren_siret: clean(data.siren_siret),
     confidence: Number(data.confidence) || 0,
-    sources: Array.isArray(data.sources) ? data.sources : [],
-    notes: data.notes || '',
+    sources: Array.isArray(data.sources) ? data.sources.map(clean).filter(Boolean) : [],
+    notes: clean(data.notes),
     created_at: data.created_at,
   };
 }
